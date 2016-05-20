@@ -1,0 +1,13 @@
+Linkovi:
+
+Šema spajanja LCD-a 16x2 na raspberry
+http://www.raspberrypi-spy.co.uk/2012/07/16x2-lcd-module-control-using-python/
+
+Raspberry Pi Twitter Monitor
+https://learn.sparkfun.com/tutorials/raspberry-pi-twitter-monitor
+
+Tweeting with Python tweepy
+http://raspi.tv/2014/tweeting-with-python-tweepy-on-the-raspberry-pi-part-2-pi-twitter-app-series
+
+How to Build a Tweet Controlled RGB LCD
+http://computers.tutsplus.com/tutorials/how-to-build-a-tweet-controlled-rgb-lcd--cms-20515
