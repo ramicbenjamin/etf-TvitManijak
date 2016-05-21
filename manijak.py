@@ -1,8 +1,16 @@
 import tweepy
 
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
+
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
+
+import Adafruit_ILI9341 as TFT
+import Adafruit_GPIO as GPIO
+import Adafruit_GPIO.SPI as SPI
 
 import json
 
@@ -11,6 +19,39 @@ import time
 
 import signal
 import sys
+import os
+
+# Konfiguracija za displej
+DC = 24
+RST = 25
+SPI_PORT = 0
+SPI_DEVICE = 0
+
+def draw_rotated_text(image, text, position, angle, font, fill=(255,255,255)):
+    # Get rendered font width and height.
+    draw = ImageDraw.Draw(image)
+    width, height = drawtextsize(text, font=font)
+    # Create a new image with transparent background to store the text.
+    textimage = Image.new('RGBA', (width, height), (0,0,0,0))
+    # Render the text.
+    textdraw = ImageDraw.Draw(textimage)
+    textdraw.text((0,0), text, font=font, fill=fill)
+    # Rotate the text image.
+    rotated = textimage.rotate(angle, expand=1)
+    # Paste the text into the image, using it as a mask for transparency.
+    image.paste(rotated, position, rotated)
+
+#font = ImageFont.load_default()
+font = ImageFont.truetype("arial.ttf", 15)
+
+disp = TFT.ILI9341(DC, rst=RST, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE, max_speed_hz=64000000))
+disp.begin()
+#image = Image.open('raspberry_resolution_logo.jpg')
+
+#disp.display(image)
+
+#draw_rotated_text(disp.buffer, 'Hello World!', (150, 120), 90, font, fill=(255,255,255))
+#disp.display()
 
 #import wiringpi
 
@@ -36,11 +77,15 @@ boje = {"crvena": pin_r, "zelena": pin_g, "plava": pin_b}
 class StdOutListener(StreamListener):
     def on_data(self, data):
         global tracking
-        
+        global disp
         tvit = json.loads(data)
         
         if tracking == True:
             print("%s kaze \"%s\"" % (tvit["user"]["name"], tvit["text"]))
+            staPrikazati = "%s kaze \"%s\"" % (tvit["user"]["name"], tvit["text"])
+            disp.clear()
+            draw_rotated_text(disp.buffer, staPrikazati, (125, 50), 90, font, fill=(255,255,255))
+            disp.display()
             komanda = tvit["text"]
             if tvit["text"].find("::") != -1:
                 parsiraj_komandu(tvit["text"].replace("#etf2016us", "").strip(), tvit["user"]["screen_name"])
@@ -144,17 +189,17 @@ def menu():
     print("3 - Izlaz")
     mod = input("Unesite izbor: ") # Treba validirati ovaj ulaz
 
-    if mod == '1':
+    if str(mod) == "1":
         tracking = False
         poruka = input("Ukucajte Tweet za slanje: ")
         api.update_status(status=poruka)
-    elif mod == str('2'):
+    elif str(mod) == "2":
         tracking = True
         tracker()
         while True:
             time.sleep(1)
-    elif mod == '3':
-        sys.exit()
+    elif str(mod) == "3":
+        os._exit(1)
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
