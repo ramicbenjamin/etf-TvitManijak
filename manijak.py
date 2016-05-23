@@ -27,6 +27,12 @@ RST = 25
 SPI_PORT = 0
 SPI_DEVICE = 0
 
+
+def draw_ellipse(disp, r, g, b, x, y, precnik):
+		draw = disp.draw()
+		draw.ellipse((x, y, precnik, precnik), outline=(r,g,b), fill=(r,g,b))
+		disp.display()
+
 def draw_rotated_text(image, text, position, angle, font, fill=(255,255,255)):
     # Get rendered font width and height.
     draw = ImageDraw.Draw(image)
@@ -40,7 +46,7 @@ def draw_rotated_text(image, text, position, angle, font, fill=(255,255,255)):
     rotated = textimage.rotate(angle, expand=1)
     # Paste the text into the image, using it as a mask for transparency.
     image.paste(rotated, position, rotated)
-
+	
 #font = ImageFont.load_default()
 font = ImageFont.truetype("arial.ttf", 15)
 
@@ -104,6 +110,7 @@ def tracker():
 def signal_handler(signal, frame):
     while True:
         menu()
+		
 
 def parsiraj_komandu(komanda, komeOdgovoriti):
     if komanda[0:2] == "::":        
@@ -119,7 +126,8 @@ def parsiraj_komandu(komanda, komeOdgovoriti):
                 print("Data komanda ne postoji!")
         except ValueError:
             print("Nisu dati nikakvi parametri ili je nepostojeca komanda!")
-
+	
+			
 def ledica(parametri, komeOdgovoriti):
     if len(parametri) != 2:
         print("@%s Neispravan broj parametara!" % komeOdgovoriti)
@@ -183,10 +191,13 @@ funkcije = {"ledica": ledica,
         
 def menu():
     global tracking
+	global disp 
+	
     print("Izaberite mod: ")
     print("1 - Tvitajte nesto")
     print("2 - Pratite tvitove")
     print("3 - Izlaz")
+	print("4 - Nacrtaj elipsu")
     mod = input("Unesite izbor: ") # Treba validirati ovaj ulaz
 
     if str(mod) == "1":
@@ -200,6 +211,8 @@ def menu():
             time.sleep(1)
     elif str(mod) == "3":
         os._exit(1)
+	elif str(mod) == "4":
+		draw_ellipse(disp, 255, 0, 0, 30, 30, 50)
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
