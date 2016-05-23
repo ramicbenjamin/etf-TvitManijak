@@ -29,14 +29,14 @@ SPI_DEVICE = 0
 
 
 def draw_ellipse(disp, r, g, b, x, y, precnik):
-		draw = disp.draw()
-		draw.ellipse((x, y, precnik, precnik), outline=(r,g,b), fill=(r,g,b))
-		disp.display()
+    draw = disp.draw()
+    draw.ellipse((x, y, precnik, precnik), outline=(r,g,b), fill=(r,g,b))
+    disp.display()
 
 def draw_rotated_text(image, text, position, angle, font, fill=(255,255,255)):
     # Get rendered font width and height.
     draw = ImageDraw.Draw(image)
-    width, height = drawtextsize(text, font=font)
+    width, height = draw.textsize(text, font=font)
     # Create a new image with transparent background to store the text.
     textimage = Image.new('RGBA', (width, height), (0,0,0,0))
     # Render the text.
@@ -48,7 +48,7 @@ def draw_rotated_text(image, text, position, angle, font, fill=(255,255,255)):
     image.paste(rotated, position, rotated)
 	
 #font = ImageFont.load_default()
-font = ImageFont.truetype("arial.ttf", 15)
+font = ImageFont.truetype("arial.ttf", 16)
 
 disp = TFT.ILI9341(DC, rst=RST, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE, max_speed_hz=64000000))
 disp.begin()
@@ -68,6 +68,8 @@ api = tweepy.API(auth)
 
 mod = '0'
 tracking = False
+jesmolBiliTracker = False
+
 
 pin_r = 2
 pin_g = 3
@@ -103,9 +105,12 @@ class StdOutListener(StreamListener):
 
     
 def tracker():
-    l = StdOutListener()
-    stream = Stream(auth, l)
-    stream.filter(track=['etf2016us'], async=True)
+    global jesmolBiliTracker
+    if jesmolBiliTracker == False:
+        jesmolBiliTracker = True
+        l = StdOutListener()
+        stream = Stream(auth, l)
+        stream.filter(track=['etf2016us'], async=True)
 
 def signal_handler(signal, frame):
     while True:
@@ -148,6 +153,27 @@ def ledica(parametri, komeOdgovoriti):
         print("@%s Pogresna komanda (jeste li fino unijeli parametre?" % komeOdgovoriti)
         api.update_status(status=("@%s Pogresna komanda (jeste li fino unijeli parametre?" % komeOdgovoriti))
 
+def krug(parametri, komeOdgovoriti):
+    global disp
+    
+    if len(parametri) != 6:
+        print("@%s Neispravan broj parametara!" % komeOdgovoriti)
+        api.update_status(status=("@%s Neispravan broj parametara!" % komeOdgovoriti))
+        return
+
+    r = int(parametri[0].strip())
+    g = int(parametri[1].strip())
+    b = int(parametri[2].strip())
+    x = int(parametri[3].strip())
+    y = int(parametri[4].strip())
+    precnik = int(parametri[5].strip())
+
+    draw_ellipse(disp, r, g, b, x, y, precnik)
+    
+
+
+
+
 
 def rgb_ledica(parametri, komeOdgovoriti):    
     if len(parametri) != 1:
@@ -186,18 +212,18 @@ def rgb_ledica(parametri, komeOdgovoriti):
 
 funkcije = {"ledica": ledica,
             "rgb_ledica": rgb_ledica
-    
+            "krug": krug    
 }
         
 def menu():
     global tracking
-	global disp 
+    global disp 
+    global jesmolBiliTracker
 	
     print("Izaberite mod: ")
     print("1 - Tvitajte nesto")
     print("2 - Pratite tvitove")
     print("3 - Izlaz")
-	print("4 - Nacrtaj elipsu")
     mod = input("Unesite izbor: ") # Treba validirati ovaj ulaz
 
     if str(mod) == "1":
@@ -211,8 +237,6 @@ def menu():
             time.sleep(1)
     elif str(mod) == "3":
         os._exit(1)
-	elif str(mod) == "4":
-		draw_ellipse(disp, 255, 0, 0, 30, 30, 50)
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
