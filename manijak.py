@@ -170,11 +170,6 @@ def krug(parametri, komeOdgovoriti):
 
     draw_ellipse(disp, r, g, b, x, y, precnik)
     
-
-
-
-
-
 def rgb_ledica(parametri, komeOdgovoriti):    
     if len(parametri) != 1:
         print("@%s Neispravan broj parametara!" % komeOdgovoriti)
@@ -224,6 +219,7 @@ def menu():
     print("1 - Tvitajte nesto")
     print("2 - Pratite tvitove")
     print("3 - Izlaz")
+    print("4 - Nacrtaj elipsu")
     mod = input("Unesite izbor: ") # Treba validirati ovaj ulaz
 
     if str(mod) == "1":
@@ -238,8 +234,9 @@ def menu():
     elif str(mod) == "3":
         os._exit(1)
     elif str(mod) == "4":
-        parsirajKomandu("::krug(255, 0, 0, 30, 30, 50)
-# test
+        parsiraj_komandu("::krug(255, 0, 0, 30, 30, 50)", "benjo")
+	#draw_ellipse(disp, 255, 0, 0, 30, 30, 50)
+
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     while True:
