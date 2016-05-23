@@ -211,7 +211,7 @@ def rgb_ledica(parametri, komeOdgovoriti):
         api.update_status(status=("@%s Pogresna komanda (jeste li fino unijeli parametre?" % komeOdgovoriti))
 
 funkcije = {"ledica": ledica,
-            "rgb_ledica": rgb_ledica
+            "rgb_ledica": rgb_ledica,
             "krug": krug    
 }
         
@@ -237,6 +237,8 @@ def menu():
             time.sleep(1)
     elif str(mod) == "3":
         os._exit(1)
+    elif str(mod) == "4":
+        parsirajKomandu("::krug(255, 0, 0, 30, 30, 50)
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
