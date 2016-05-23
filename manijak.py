@@ -239,7 +239,7 @@ def menu():
         os._exit(1)
     elif str(mod) == "4":
         parsirajKomandu("::krug(255, 0, 0, 30, 30, 50)
-
+# test
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     while True:
