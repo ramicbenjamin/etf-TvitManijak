@@ -32,12 +32,17 @@ SPI_DEVICE = 0
 
 def draw_ellipse(disp, r, g, b, x, y, precnik):
     draw = disp.draw()
-    draw.ellipse((x, y, precnik, precnik), outline=(r,g,b), fill=(r,g,b))
+    draw.ellipse((x, y, x+precnik,y+precnik), outline=(r,g,b), fill=(r,g,b))
     disp.display()
 
 def draw_rect(disp, r, g, b, x1, y1, x2, y2):
     draw = disp.draw()
     draw.rectangle((x1, y1, x2, y2), outline=(r, g, b), fill=(r, g, b))
+    disp.display()
+
+def draw_poly(disp, r, g, b, x1, y1, x2, y2, x3, y3):
+    draw = disp.draw()
+    draw.polygon([(x1, y1), (x2, y2), (x3, y3)], outline=(r, g, b), fill=(r, g, b))
     disp.display()
 
 def draw_rotated_text(image, text, position, angle, font, fill=(255,255,255)):
@@ -100,17 +105,17 @@ class StdOutListener(StreamListener):
             #staPrikazati = "%s kaze \"%s\"" % (tvit["user"]["name"], tvit["text"])
             #disp.clear()
             #draw_rotated_text(disp.buffer, staPrikazati, (125, 50), 90, font, fill=(255,255,255))
-            #disp.display()
+            disp.clear()
 
             # Prvo prikazi ime
             staPrikazati = "%s kaze: " % (tvit["user"]["name"])
-            draw_rotated_text(disp.buffer, staPrikazati, (125, 50), 90, font, fill=(255,255,255))
+            draw_rotated_text(disp.buffer, staPrikazati, (125, 40), 90, font, fill=(255,255,255))
 
             # Otprilike moze stati 60 slova?
             staSvePrikazati = textwrap.wrap(tvit["text"], 60)
             plusY = 20
             for prikaziMe in staSvePrikazati:
-                draw_rotated_text(disp.buffer, prikaziMe, (125, 50+plusY), 90, font, fill=(255,255,255))
+                draw_rotated_text(disp.buffer, prikaziMe, (125+plusY,40), 90, font, fill=(255,255,255))
                 plusY = plusY + 20
                 
             disp.display()
@@ -194,7 +199,7 @@ def krug(parametri, komeOdgovoriti):
 def rect(parametri, komeOdgovoriti):
     global disp
     
-    if len(parametri) != 8:
+    if len(parametri) != 7:
         print("@%s Neispravan broj parametara!" % komeOdgovoriti)
         api.update_status(status=("@%s Neispravan broj parametara!" % komeOdgovoriti))
         return
@@ -205,9 +210,30 @@ def rect(parametri, komeOdgovoriti):
     x1 = int(parametri[3].strip())
     y1 = int(parametri[4].strip())
     x2 = int(parametri[5].strip())
-    y2 = int(parametri[5].strip())
+    y2 = int(parametri[6].strip())
 
     draw_rect(disp, r, g, b, x1, y1, x2, y2)
+
+#def draw_poly(disp, r, g, b, x1, y1, x2, y2, x3, y3):
+def poly(parametri, komeOdgovoriti):
+    global disp
+
+    if len(parametri) != 9:
+        print("@%s Neispravan broj parametara!" % komeOdgovoriti)
+        api.update_status(status=("@%s Neispravan broj parametara!" % komeOdgovoriti))
+        return
+    
+    r = int(parametri[0].strip())
+    g = int(parametri[1].strip())
+    b = int(parametri[2].strip())
+    x1 = int(parametri[3].strip())
+    y1 = int(parametri[4].strip())
+    x2 = int(parametri[5].strip())
+    y2 = int(parametri[6].strip())
+    x3 = int(parametri[7].strip())
+    y3 = int(parametri[8].strip())
+
+    draw_poly(disp, r, g, b, x1, y1, x2, y2, x3, y3)
     
 def rgb_ledica(parametri, komeOdgovoriti):    
     if len(parametri) != 1:
@@ -246,8 +272,9 @@ def rgb_ledica(parametri, komeOdgovoriti):
 
 funkcije = {"ledica": ledica,
             "rgb_ledica": rgb_ledica,
-            "krug": krug,
-            "rect": rect
+            "circ": krug,
+            "rect": rect,
+            "poly": poly
 }
         
 def menu():
