@@ -7,5 +7,5 @@
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/Uxqf4DM8tGI/0.jpg)](https://www.youtube.com/watch?v=Uxqf4DM8tGI)
 
 ### Authors:
-- Ahmed Popovicć
+- Ahmed Popović
 - Benjamin Ramić
